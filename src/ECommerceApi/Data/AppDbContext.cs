@@ -7,7 +7,6 @@ public class AppDbContext : DbContext
 {
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-    public DbSet<User> Users => Set<User>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Cart> Carts => Set<Cart>();
@@ -18,19 +17,8 @@ public class AppDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<User>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-
-        modelBuilder.Entity<User>()
-            .Property(u => u.GoldBalance)
-            .HasPrecision(18, 2)
-            .HasDefaultValue(0m);
-
-        modelBuilder.Entity<Cart>()
-            .HasOne(c => c.User)
-            .WithOne(u => u.Cart)
-            .HasForeignKey<Cart>(c => c.UserId);
+        // Cart.UserId e Order.UserId referenciam Users em todo_db — sem FK local
+        // (usuários são gerenciados pelo todo-api via SharedDbContext)
 
         modelBuilder.Entity<Product>()
             .Property(p => p.Price)

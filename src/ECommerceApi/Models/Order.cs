@@ -10,7 +10,7 @@ public class Order
     public decimal TotalAmount { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public User User { get; set; } = null!;
+    // UserId referencia Users em todo_db (sem FK no BD)
     public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
     public Payment? Payment { get; set; }
 }
