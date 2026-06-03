@@ -5,7 +5,8 @@ namespace ECommerceApi.DTOs;
 // Auth
 public record RegisterRequest(string Name, string Email, string Password);
 public record LoginRequest(string Email, string Password);
-public record AuthResponse(string Token, string Name, string Email);
+public record AuthResponse(string Token, string Name, string Email, decimal GoldBalance, string? WelcomeDialogue = null);
+public record DeductGoldRequest(decimal Amount);
 
 // Category
 public record CategoryResponse(int Id, string Name);

@@ -9,7 +9,7 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
         optionsBuilder.UseMySql(
-            "Server=localhost;Port=3306;Database=ecommerce_db;User=root;Password=root;",
+            "Server=localhost;Port=3306;Database=ecommerce_db;User=root;Password=REDACTED_PASSWORD;",
             ServerVersion.Parse("8.0.0-mysql"));
 
         return new AppDbContext(optionsBuilder.Options);

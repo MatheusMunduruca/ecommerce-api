@@ -22,6 +22,11 @@ public class AppDbContext : DbContext
             .HasIndex(u => u.Email)
             .IsUnique();
 
+        modelBuilder.Entity<User>()
+            .Property(u => u.GoldBalance)
+            .HasPrecision(18, 2)
+            .HasDefaultValue(0m);
+
         modelBuilder.Entity<Cart>()
             .HasOne(c => c.User)
             .WithOne(u => u.Cart)
