@@ -1,3 +1,4 @@
+[![CI](https://github.com/MatheusMunduruca/ecommerce-api/actions/workflows/ci.yml/badge.svg)](https://github.com/MatheusMunduruca/ecommerce-api/actions/workflows/ci.yml)
 # 🧪 Empório do Rudolf — E-Commerce API
 
 API REST de e-commerce com temática de alquimia, construída em **C# .NET 8**. É o backend da loja do alquimista **Rudolf**, que compartilha login e economia de ouro com a [Taverna do Gregor](https://github.com/MatheusMunduruca/todo-api).
