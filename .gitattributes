@@ -1,0 +1,2 @@
+# Garante que o hook do git mantenha LF (senão o shebang quebra no Windows)
+.githooks/pre-commit text eol=lf
