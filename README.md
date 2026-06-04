@@ -2,11 +2,13 @@
 
 API REST de e-commerce com temática de alquimia, construída em **C# .NET 8**. É o backend da loja do alquimista **Rudolf**, que compartilha login e economia de ouro com a [Taverna do Gregor](https://github.com/MatheusMunduruca/todo-api).
 
+![CI](https://github.com/MatheusMunduruca/ecommerce-api/actions/workflows/ci.yml/badge.svg)
 ![.NET](https://img.shields.io/badge/.NET-8.0-purple?logo=dotnet)
 ![C#](https://img.shields.io/badge/C%23-12.0-blue?logo=csharp)
 ![EF Core](https://img.shields.io/badge/EF%20Core-8.0-purple)
 ![MySQL](https://img.shields.io/badge/MySQL-8.0-orange?logo=mysql)
 ![JWT](https://img.shields.io/badge/Auth-JWT%20compartilhado-green)
+![Tests](https://img.shields.io/badge/Tests-33%20passing-brightgreen?logo=checkmarx)
 ![Swagger](https://img.shields.io/badge/Docs-Swagger-green?logo=swagger)
 
 ---
@@ -127,6 +129,7 @@ O preço final com desconto é refletido no carrinho e no total do pedido.
 | `POST` | `/api/products` | Cria produto | ✅ |
 | `PUT` | `/api/products/{id}` | Atualiza produto | ✅ |
 | `DELETE` | `/api/products/{id}` | Remove produto | ✅ |
+| `POST` | `/api/products/refresh-stock` | Renova o estoque na hora (somente contas `@adm`) | ✅ |
 
 ### Categories / Cart / Orders
 | Método | Endpoint | Descrição | Auth |
@@ -159,7 +162,11 @@ ecommerce-api/
 │   ├── Migrations/
 │   ├── Program.cs
 │   └── appsettings.Example.json   # modelo — copie para appsettings.json
-├── tests/                  # projetos de teste (Unit / Integration / BDD) — em evolução
+├── tests/
+│   ├── ECommerceApi.UnitTests/         # xUnit + Moq + FluentAssertions
+│   ├── ECommerceApi.IntegrationTests/  # WebApplicationFactory + Bogus
+│   └── ECommerceApi.BddTests/          # SpecFlow (Gherkin)
+├── .github/workflows/ci.yml           # build + test a cada push/PR
 └── docker-compose.yml
 ```
 
@@ -208,15 +215,33 @@ Como o todo-api e este projeto usam a **mesma chave JWT** e a **mesma tabela de 
 
 ---
 
+## 🧪 Testes
+
+**33 testes automatizados** em três níveis, executados a cada push pelo GitHub Actions.
+
+```bash
+dotnet test
+```
+
+| Projeto | Qtd | Stack | Cobre |
+|---|---|---|---|
+| `ECommerceApi.UnitTests` | 15 | xUnit · Moq · FluentAssertions | Preço final com desconto, geração de JWT (TokenService), faixas de estoque e descontos do `RudolfStockService` (EF InMemory) |
+| `ECommerceApi.IntegrationTests` | 14 | WebApplicationFactory · Bogus · FluentAssertions | Fluxo HTTP real: registro/login, catálogo, carrinho com desconto, checkout debitando estoque, controle de estoque, refresh admin (403/200) |
+| `ECommerceApi.BddTests` | 4 | SpecFlow (Gherkin) | Cenários de checkout e de reposição de estoque em linguagem de negócio |
+
+Os testes usam **banco InMemory** e configuração injetada — não precisam de MySQL nem de `appsettings.json`, então rodam de forma isolada e determinística (inclusive no CI).
+
+---
+
 ## 🗺️ Roadmap
 
 - [x] Modelagem (produtos, categorias, carrinho, pedidos, pagamentos)
 - [x] Autenticação JWT compartilhada + economia de ouro
 - [x] Estoque randomizado a cada 6h + sistema de descontos
-- [ ] Suíte de testes Unitários (xUnit + Moq + FluentAssertions)
-- [ ] Testes de Integração (WebApplicationFactory + Bogus)
-- [ ] Testes BDD (SpecFlow)
-- [ ] GitHub Actions CI
+- [x] Suíte de testes Unitários (xUnit + Moq + FluentAssertions)
+- [x] Testes de Integração (WebApplicationFactory + Bogus)
+- [x] Testes BDD (SpecFlow)
+- [x] GitHub Actions CI
 
 ---
 

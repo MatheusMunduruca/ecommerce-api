@@ -27,4 +27,6 @@ regexes = [
   '''SUA_SENHA_AQUI''',
   '''MESMA_CHAVE_LONGA_DO_TODO_API''',
   '''UMA_CHAVE_LONGA_E_SECRETA_COMPARTILHADA_ENTRE_AS_DUAS_APIS''',
+  # Chaves JWT falsas usadas apenas em testes
+  '''chave-de-teste-[A-Za-z0-9_\-]+''',
 ]
