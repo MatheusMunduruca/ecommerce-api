@@ -47,8 +47,8 @@ public class OrderController : ControllerBase
                 });
         }
 
-        // Cria o pedido
-        var total = cart.Items.Sum(i => i.Product!.Price * i.Quantity);
+        // Cria o pedido (preço final já com desconto)
+        var total = cart.Items.Sum(i => i.Product!.FinalPrice * i.Quantity);
         var order = new Order
         {
             UserId = userId,
@@ -67,7 +67,7 @@ public class OrderController : ControllerBase
                 OrderId = order.Id,
                 ProductId = item.ProductId,
                 Quantity = item.Quantity,
-                UnitPrice = item.Product!.Price
+                UnitPrice = item.Product!.FinalPrice
             });
 
             item.Product.StockQuantity -= item.Quantity;

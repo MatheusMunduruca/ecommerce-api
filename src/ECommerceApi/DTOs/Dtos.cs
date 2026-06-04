@@ -13,7 +13,7 @@ public record CategoryResponse(int Id, string Name);
 public record CreateCategoryRequest(string Name);
 
 // Product
-public record ProductResponse(int Id, string Name, string Description, decimal Price, int StockQuantity, int CategoryId, string CategoryName);
+public record ProductResponse(int Id, string Name, string Description, decimal Price, int StockQuantity, int CategoryId, string CategoryName, int DiscountPercent, decimal FinalPrice);
 public record CreateProductRequest(string Name, string Description, decimal Price, int StockQuantity, int CategoryId);
 public record UpdateProductRequest(string Name, string Description, decimal Price, int StockQuantity, int CategoryId);
 

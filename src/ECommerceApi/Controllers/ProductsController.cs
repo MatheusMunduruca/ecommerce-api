@@ -2,6 +2,7 @@ using AutoMapper;
 using ECommerceApi.Data;
 using ECommerceApi.DTOs;
 using ECommerceApi.Models;
+using ECommerceApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +15,21 @@ public class ProductsController : ControllerBase
 {
     private readonly AppDbContext _db;
     private readonly IMapper _mapper;
+    private readonly RudolfStockService _stock;
 
-    public ProductsController(AppDbContext db, IMapper mapper)
+    public ProductsController(AppDbContext db, IMapper mapper, RudolfStockService stock)
     {
         _db = db;
         _mapper = mapper;
+        _stock = stock;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetAll([FromQuery] int? category, [FromQuery] decimal? minPrice, [FromQuery] decimal? maxPrice)
     {
+        // Re-sorteia o estoque se a janela de 6h virou (cobre API que ficou offline)
+        await _stock.EnsureCurrentAsync();
+
         var query = _db.Products.Include(p => p.Category).AsQueryable();
 
         if (category.HasValue)
@@ -42,6 +48,8 @@ public class ProductsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<IActionResult> GetById(int id)
     {
+        await _stock.EnsureCurrentAsync();
+
         var product = await _db.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
         if (product is null) return NotFound();
         return Ok(_mapper.Map<ProductResponse>(product));

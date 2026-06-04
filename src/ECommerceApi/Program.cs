@@ -74,6 +74,10 @@ builder.Services.AddCors(opt =>
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<TokenService>();
 
+// Randomização do estoque de Rudolf a cada 6 horas
+builder.Services.AddScoped<RudolfStockService>();
+builder.Services.AddHostedService<StockRandomizerHostedService>();
+
 var app = builder.Build();
 
 app.UseSwagger();

@@ -128,13 +128,17 @@ public class CartController : ControllerBase
 
     private static CartResponse MapCart(Cart cart)
     {
-        var items = cart.Items.Select(i => new CartItemResponse(
-            i.ProductId,
-            i.Product?.Name ?? "Desconhecido",
-            i.Product?.Price ?? 0,
-            i.Quantity,
-            (i.Product?.Price ?? 0) * i.Quantity
-        )).ToList();
+        var items = cart.Items.Select(i =>
+        {
+            var unit = i.Product?.FinalPrice ?? 0;   // já com desconto aplicado
+            return new CartItemResponse(
+                i.ProductId,
+                i.Product?.Name ?? "Desconhecido",
+                unit,
+                i.Quantity,
+                unit * i.Quantity
+            );
+        }).ToList();
 
         var total = items.Sum(i => i.Subtotal);
 
