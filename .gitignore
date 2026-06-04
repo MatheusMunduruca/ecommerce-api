@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# Credenciais locais — NÃO versionar (use appsettings.Example.json como modelo)
+appsettings.json
+appsettings.Development.json
+
 # User-specific files
 *.rsuser
 *.suo
