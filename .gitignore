@@ -3,12 +3,30 @@
 ##
 ## Get latest from `dotnet new gitignore`
 
-# dotenv files
-.env
-
-# Credenciais locais — NÃO versionar (use appsettings.Example.json como modelo)
+# ===== Segredos e configuração local =====
+# Ignora TODOS os appsettings, exceto o modelo de exemplo
 appsettings.json
-appsettings.Development.json
+appsettings.*.json
+!appsettings.Example.json
+
+# Arquivos de ambiente
+.env
+.env.*
+!.env.example
+
+# Segredos do .NET / chaves / certificados
+secrets.json
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+*.snk
+
+# Arquivos "locais" genéricos (overrides locais)
+*.local
+*.local.json
 
 # User-specific files
 *.rsuser

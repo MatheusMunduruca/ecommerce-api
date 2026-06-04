@@ -1,0 +1,28 @@
+#!/bin/sh
+# Pre-commit: bloqueia o commit se o gitleaks detectar segredos nos arquivos staged.
+# Ativar neste repo (uma vez):  git config core.hooksPath .githooks
+
+GITLEAKS="$(command -v gitleaks 2>/dev/null || true)"
+if [ -z "$GITLEAKS" ]; then
+  # Fallback para instalação via winget (Windows)
+  for c in \
+    "$LOCALAPPDATA/Microsoft/WinGet/Packages/Gitleaks.Gitleaks_Microsoft.Winget.Source_8wekyb3d8bbwe/gitleaks.exe" \
+    "$HOME/AppData/Local/Microsoft/WinGet/Packages/Gitleaks.Gitleaks_Microsoft.Winget.Source_8wekyb3d8bbwe/gitleaks.exe"; do
+    if [ -x "$c" ]; then GITLEAKS="$c"; break; fi
+  done
+fi
+
+if [ -z "$GITLEAKS" ]; then
+  echo "⚠️  gitleaks não encontrado — verificação de segredos pulada (instale o gitleaks para ativá-la)."
+  exit 0
+fi
+
+"$GITLEAKS" git --staged --redact --no-banner
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "🚫 COMMIT BLOQUEADO: o gitleaks detectou um possível segredo nos arquivos staged."
+  echo "   Revise os achados acima. Remova o segredo ou, se for falso positivo,"
+  echo "   refaça com:  git commit --no-verify"
+  exit 1
+fi
+exit 0
