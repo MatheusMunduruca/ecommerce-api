@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using ECommerceApi.Data;
 using ECommerceApi.DTOs;
@@ -53,6 +54,24 @@ public class ProductsController : ControllerBase
         var product = await _db.Products.Include(p => p.Category).FirstOrDefaultAsync(p => p.Id == id);
         if (product is null) return NotFound();
         return Ok(_mapper.Map<ProductResponse>(product));
+    }
+
+    /// <summary>
+    /// Força a renovação imediata do estoque de Rudolf.
+    /// Restrito a contas administrativas (domínio de e-mail "adm").
+    /// </summary>
+    [HttpPost("refresh-stock")]
+    [Authorize]
+    public async Task<IActionResult> RefreshStock()
+    {
+        var email = User.FindFirstValue(ClaimTypes.Email) ?? string.Empty;
+        var domain = email.Contains('@') ? email.Split('@')[1] : string.Empty;
+
+        if (!domain.Equals("adm", StringComparison.OrdinalIgnoreCase))
+            return Forbid();
+
+        await _stock.ForceRandomizeAsync();
+        return Ok(new { message = "Estoque renovado." });
     }
 
     [HttpPost]

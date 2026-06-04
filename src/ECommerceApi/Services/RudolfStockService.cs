@@ -73,29 +73,50 @@ public class RudolfStockService
             if (state != null && state.LastWindow == current) return;
 
             // Semente baseada na janela: estável dentro das 6h, muda a cada janela
-            var rng = new Random(unchecked((int)current));
-
-            var products = await _db.Products.Include(p => p.Category).ToListAsync();
-            foreach (var p in products)
-            {
-                var (min, max, chance) = RulesFor(p.Category?.Name ?? "");
-                p.StockQuantity = rng.Next(min, max + 1);
-                p.DiscountPercent = rng.NextDouble() < chance ? RollDiscountValue(rng) : 0;
-            }
-
-            if (state == null)
-            {
-                state = new StockState();
-                _db.StockStates.Add(state);
-            }
-            state.LastWindow = current;
-            state.LastRandomizedAt = DateTime.UtcNow;
-
-            await _db.SaveChangesAsync();
+            await ApplyRandomizationAsync(new Random(unchecked((int)current)), current);
         }
         finally
         {
             _gate.Release();
         }
+    }
+
+    /// <summary>
+    /// Força um novo sorteio do estoque imediatamente (uso administrativo).
+    /// Usa semente aleatória para garantir valores diferentes do sorteio da janela.
+    /// </summary>
+    public async Task ForceRandomizeAsync()
+    {
+        await _gate.WaitAsync();
+        try
+        {
+            await ApplyRandomizationAsync(new Random(), CurrentWindow());
+        }
+        finally
+        {
+            _gate.Release();
+        }
+    }
+
+    private async Task ApplyRandomizationAsync(Random rng, long window)
+    {
+        var products = await _db.Products.Include(p => p.Category).ToListAsync();
+        foreach (var p in products)
+        {
+            var (min, max, chance) = RulesFor(p.Category?.Name ?? "");
+            p.StockQuantity = rng.Next(min, max + 1);
+            p.DiscountPercent = rng.NextDouble() < chance ? RollDiscountValue(rng) : 0;
+        }
+
+        var state = await _db.StockStates.FirstOrDefaultAsync();
+        if (state == null)
+        {
+            state = new StockState();
+            _db.StockStates.Add(state);
+        }
+        state.LastWindow = window;
+        state.LastRandomizedAt = DateTime.UtcNow;
+
+        await _db.SaveChangesAsync();
     }
 }
