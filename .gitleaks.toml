@@ -1,0 +1,30 @@
+# Configuração do gitleaks — usada pelo hook .githooks/pre-commit
+# Mantém todas as regras padrão e adiciona regras para os segredos típicos
+# destes projetos (senha em connection string e chave JWT).
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "connection-string-password"
+description = "Senha embutida em connection string"
+regex = '''(?i)(password|pwd)\s*=\s*[^;"'\s]{3,}'''
+tags = ["password", "connection-string"]
+
+[[rules]]
+id = "jwt-signing-key"
+description = "Possível chave de assinatura JWT em configuração"
+regex = '''(?i)"key"\s*:\s*"[A-Za-z0-9_\-]{24,}"'''
+tags = ["jwt", "secret"]
+
+[allowlist]
+description = "Ignora placeholders dos arquivos de exemplo"
+paths = [
+  '''appsettings\.Example\.json''',
+  '''\.env\.example''',
+]
+regexes = [
+  '''SUA_SENHA_AQUI''',
+  '''MESMA_CHAVE_LONGA_DO_TODO_API''',
+  '''UMA_CHAVE_LONGA_E_SECRETA_COMPARTILHADA_ENTRE_AS_DUAS_APIS''',
+]
